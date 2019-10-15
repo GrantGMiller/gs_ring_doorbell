@@ -9,12 +9,7 @@ try:
 except ImportError:
     from urllib import urlencode
 
-try:
-    #import requests
-    raise Exception('fake')
-except:
-    import gs_requests as requests
-
+import requests
 from uuid import uuid4 as uuid
 from extronlib.system import File, Wait
 from extronlib import event
@@ -29,6 +24,9 @@ if DEBUG is False:
 class Logger:
     def error(self, *a, **k):
         print('Logger.error:', a, k)
+
+    def debug(self, *a, **k):
+        print('Logger.debug:', *a, **k)
 
 
 _LOGGER = Logger()
@@ -143,7 +141,8 @@ POST_DATA = {
     'device[metadata][manufacturer]': 'Qemu',
     'device[metadata][device_type]': 'desktop',
     'device[metadata][architecture]': 'desktop',
-    'device[metadata][language]': 'en'}
+    'device[metadata][language]': 'en'
+}
 
 PERSIST_TOKEN_DATA = {
     'api_version': API_VERSION,
@@ -344,9 +343,11 @@ class Ring(object):
         oauth_data['username'] = self.username
         oauth_data['password'] = self.password
 
-        response = self.session.post(OAUTH_ENDPOINT,
-                                     data=oauth_data,
-                                     headers=HEADERS)
+        response = self.session.post(
+            OAUTH_ENDPOINT,
+            data=oauth_data,
+            headers=HEADERS
+        )
         oauth_token = None
         if response.status_code == 200:
             oauth_token = response.json().get('access_token')
@@ -362,9 +363,11 @@ class Ring(object):
             loop += 1
             try:
                 if session is None:
-                    req = self.session.post((url),
-                                            data=POST_DATA,
-                                            headers=HEADERS)
+                    req = self.session.post(
+                        url,
+                        data=POST_DATA,
+                        headers=HEADERS
+                    )
                 else:
                     req = session
             except requests.exceptions.RequestException as err_msg:
@@ -452,33 +455,33 @@ class Ring(object):
             loop += 1
             try:
                 if method == 'GET':
-                    req = self.session.get((url), params=urlencode(params))
+                    resp = self.session.get(url, params=urlencode(params))
                 elif method == 'PUT':
-                    req = self.session.put((url), params=urlencode(params))
+                    resp = self.session.put(url, params=urlencode(params))
                 elif method == 'POST':
-                    req = self.session.post(
-                        (url), params=urlencode(params), json=json)
+                    resp = self.session.post(
+                        url, params=urlencode(params), json=json)
 
                 if self.debug:
-                    _LOGGER.debug("_query %s ret %s", loop, req.status_code)
+                    _LOGGER.debug("_query %s ret %s", loop, resp.status_code)
 
             except requests.exceptions.RequestException as err_msg:
                 _LOGGER.error("Error!! %s", err_msg)
                 raise
 
             # if token is expired, refresh credentials and try again
-            if req.status_code == 401:
+            if resp.status_code == 401:
                 self._NewConnectionStatus(False)
                 self._authenticate()
                 continue
 
-            if req.status_code == 200 or req.status_code == 204:
+            if resp.status_code == 200 or resp.status_code == 204:
                 # if raw, return session object otherwise return JSON
                 if raw:
-                    response = req
+                    response = resp
                 else:
                     if method == 'GET':
-                        response = req.json()
+                        response = resp.json()
                 break
 
         if self.debug and response is None:
@@ -1251,7 +1254,7 @@ def _read_cache(filename):
 if __name__ == '__main__':
     import creds
 
-    ring = Ring(creds.username, creds.password)
+    ring = Ring(creds.username, creds.password, debug=True)
 
 
     @event(ring, ['Connected', 'Disconnected'])
