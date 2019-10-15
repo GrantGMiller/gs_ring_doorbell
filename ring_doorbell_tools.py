@@ -18,7 +18,7 @@ from extronlib import event
 from datetime import datetime
 import json
 
-DEBUG = True
+DEBUG = False
 if DEBUG is False:
     print = lambda *a, **k: None
 
