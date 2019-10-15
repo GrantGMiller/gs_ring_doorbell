@@ -4,21 +4,24 @@
 import time
 from collections import defaultdict
 
-import pytz
-
 try:
     from urllib.parse import urlencode
 except ImportError:
     from urllib import urlencode
 
-import requests
+try:
+    #import requests
+    raise Exception('fake')
+except:
+    import gs_requests as requests
+
 from uuid import uuid4 as uuid
 from extronlib.system import File, Wait
 from extronlib import event
 from datetime import datetime
 import json
 
-DEBUG = False
+DEBUG = True
 if DEBUG is False:
     print = lambda *a, **k: None
 
@@ -184,12 +187,7 @@ class Ring(object):
         #   int(ID): dict(eventDetails)
         #   }
 
-        utc = pytz.utc
-        nowDT = datetime.utcnow()
-        self._scriptStartDT = datetime(
-            nowDT.year, nowDT.month, nowDT.day,
-            nowDT.hour, nowDT.minute, nowDT.second,
-            tzinfo=utc)  # ignore events that happen before this DT
+        self._scriptStartDT = datetime.utcnow()  # ignore events that happen before this DT
         self._motionEventCallback = None
         self._dingEventCallback = None
         self._connectedCallback = None
@@ -897,22 +895,12 @@ class RingDoorBell(RingGeneric):
                 response = list(filter(
                     lambda array: array['kind'] == kind, response))
 
-            # convert for specific timezone
-            utc = pytz.utc
-            if timezone:
-                mytz = pytz.timezone(timezone)
-
             for entry in response:
-                dt_at = datetime.strptime(entry['created_at'],
-                                          '%Y-%m-%dT%H:%M:%S.000Z')
-                utc_dt = datetime(dt_at.year, dt_at.month, dt_at.day,
-                                  dt_at.hour, dt_at.minute, dt_at.second,
-                                  tzinfo=utc)
-                if timezone:
-                    tz_dt = utc_dt.astimezone(mytz)
-                    entry['created_at'] = tz_dt
-                else:
-                    entry['created_at'] = utc_dt
+                utc_dt = datetime.strptime(
+                    entry['created_at'],
+                    '%Y-%m-%dT%H:%M:%S.000Z'
+                )
+                entry['created_at'] = utc_dt
 
             if enforce_limit:
                 # return because already matched the number
@@ -1268,7 +1256,7 @@ if __name__ == '__main__':
 
     @event(ring, ['Connected', 'Disconnected'])
     def ConnectionEvent(interface, state):
-        print('ConnectionEvent(interface={}, state{})'.format(interface, state))
+        print('ConnectionEvent(interface={}, state={})'.format(interface, state))
 
 
     @event(ring, 'Motion')

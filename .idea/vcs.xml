@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../extronlib-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../gs_requests" vcs="Git" />
   </component>
 </project>
