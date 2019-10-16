@@ -3,6 +3,9 @@
 """Python Ring Doorbell wrapper.
 Based on the project: https://github.com/tchellomello/python-ring-doorbell
 Modified to work within the Extron Global Scripter platform.
+See example GS file: https://github.com/GrantGMiller/gs_ring_doorbell/blob/master/examples/Ring%20Doorbell%20Example.gs
+
+Notes: make sure the time/date on your processor is set correctly and your processor can reach api.ring.com
 
 """
 import time
@@ -1261,6 +1264,7 @@ if __name__ == '__main__':
 
     ring = Ring(creds.username, creds.password, debug=True)
     oldPrint('Devices=', ring.devices.values())
+
 
     @event(ring, ['Connected', 'Disconnected'])
     def ConnectionEvent(interface, state):
