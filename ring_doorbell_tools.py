@@ -7,7 +7,9 @@ See example GS file: https://github.com/GrantGMiller/gs_ring_doorbell/blob/maste
 
 Notes: make sure the time/date on your processor is set correctly and your processor can reach api.ring.com
 This modules queries the ring API once per minute and triggers events. Thus your events could be up to 1 minute delayed.
-
+An easy way to force an event is to "Go Live" with your Ring smartphone app.
+    This will trigger a "Other" event.
+    Of course you could also go outside and wave your hand in front of the camera, or press the doorbell button.
 """
 import time
 from collections import defaultdict
