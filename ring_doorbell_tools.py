@@ -6,6 +6,7 @@ Modified to work within the Extron Global Scripter platform.
 See example GS file: https://github.com/GrantGMiller/gs_ring_doorbell/blob/master/examples/Ring%20Doorbell%20Example.gs
 
 Notes: make sure the time/date on your processor is set correctly and your processor can reach api.ring.com
+This modules queries the ring API once per minute and triggers events. Thus your events could be up to 1 minute delayed.
 
 """
 import time
