@@ -1,6 +1,10 @@
 # coding: utf-8
 # vim:sw=4:ts=4:et:
-"""Python Ring Doorbell wrapper."""
+"""Python Ring Doorbell wrapper.
+Based on the project: https://github.com/tchellomello/python-ring-doorbell
+Modified to work within the Extron Global Scripter platform.
+
+"""
 import time
 from collections import defaultdict
 
@@ -16,7 +20,8 @@ from extronlib import event
 from datetime import datetime
 import json
 
-DEBUG = True
+DEBUG = False
+oldPrint = print
 if DEBUG is False:
     print = lambda *a, **k: None
 
@@ -1255,26 +1260,26 @@ if __name__ == '__main__':
     import creds
 
     ring = Ring(creds.username, creds.password, debug=True)
-
+    oldPrint('Devices=', ring.devices.values())
 
     @event(ring, ['Connected', 'Disconnected'])
     def ConnectionEvent(interface, state):
-        print('ConnectionEvent(interface={}, state={})'.format(interface, state))
+        oldPrint('ConnectionEvent(interface={}, state={})'.format(interface, state))
 
 
     @event(ring, 'Motion')
     def MotionEvent(deviceName, evt):
-        print('MotionEvent(deviceName={}, evt={})'.format(deviceName, evt))
+        oldPrint('MotionEvent(deviceName={}, evt={})'.format(deviceName, evt))
 
 
     @event(ring, 'Ding')
     def DingEvent(deviceName, evt):
-        print('DingEvent(deviceName={}, evt={})'.format(deviceName, evt))
+        oldPrint('DingEvent(deviceName={}, evt={})'.format(deviceName, evt))
 
 
     @event(ring, 'Other')
     def OtherEvent(deviceName, evt):
-        print('OtherEvent(deviceName={}, evt={})'.format(deviceName, evt))
+        oldPrint('OtherEvent(deviceName={}, evt={})'.format(deviceName, evt))
 
 
-    print('end test')
+    oldPrint('end test script. waiting for events')
