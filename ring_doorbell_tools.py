@@ -213,7 +213,10 @@ class Ring(object):
             self.cache['token'] = self.token
             self._process_cached_session()
         else:
-            self._authenticate()
+            try:
+                self._authenticate()
+            except:
+                pass
 
         self._Update()  # force update on boot up
 
@@ -268,6 +271,13 @@ class Ring(object):
 
     def _Update(self):
         print('_Update')
+
+        if not self.is_connected:
+            try:
+                self._authenticate()
+            except:
+                self._wait_Update.Restart()
+                return
 
         self._maxLen = 0
 
